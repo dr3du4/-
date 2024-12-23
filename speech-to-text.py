@@ -85,7 +85,7 @@ def mp4_to_text(input_file, output_file):
 
 
 # Przykład użycia
-input_file = "C:/Users/slowi/PROJEKTY/IO/input_file_pol.mp4"  # Ścieżka do pliku wideo
-output_file = "C:/Users/slowi/PROJEKTY/IO/wynik.txt"  # Ścieżka do pliku, gdzie zapisany będzie tekst
+input_file = "C:/sciezka/dp/pliku/video/input_file_pol.mp4"  # Ścieżka do pliku wideo
+output_file = "C:/sciezka/do/pliku/wynikowego/wynik.txt"  # Ścieżka do pliku, gdzie zapisany będzie tekst
 
 mp4_to_text(input_file, output_file)
