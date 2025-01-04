@@ -1,25 +1,35 @@
-import sounddevice as sd
 import wave
+import sounddevice as sd
 import threading
 import cv2
 import numpy as np
 import pyautogui
 import time
 
-# Parametry nagrywania audio
-SAMPLE_RATE = 44100  # Częstotliwość próbkowania
-CHANNELS = 2         # Liczba kanałów
+# Parameters for audio recording
+SAMPLE_RATE = 44100  # Sampling rate
+CHANNELS = 2         # Number of channels
 AUDIO_OUTPUT_FILENAME = "output_audio.wav"
 
-# Parametry nagrywania wideo
+# Parameters for video recording
 SCREEN_SIZE = (1920, 1080)
 VIDEO_OUTPUT_FILENAME = "output_video.avi"
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 out = cv2.VideoWriter(VIDEO_OUTPUT_FILENAME, fourcc, 20.0, SCREEN_SIZE)
 
-# Flaga nagrywania
+# Flag for recording
 recording = True
 audio_frames = []
+
+import signal
+import sys
+
+def signal_handler(sig, frame):
+    global recording
+    print("Received termination signal. Stopping recording...")
+    recording = False
+
+signal.signal(signal.SIGTERM, signal_handler)
 
 def record_audio():
     global audio_frames, recording
@@ -29,23 +39,23 @@ def record_audio():
             print(status)
         audio_frames.append(indata.copy())
 
-    print("Rozpoczęto nagrywanie dźwięku.")
+    print("Started recording audio.")
     with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, callback=callback):
         while recording:
             sd.sleep(100)
-    print("Nagrywanie dźwięku zakończone.")
+    print("Audio recording finished.")
 
-    # Zapis audio do pliku
+    # Save audio to a file
     with wave.open(AUDIO_OUTPUT_FILENAME, 'wb') as wf:
         wf.setnchannels(CHANNELS)
-        wf.setsampwidth(2)  # Rozmiar próbki: 16 bitów = 2 bajty
+        wf.setsampwidth(2)  # Sample size: 16 bits = 2 bytes
         wf.setframerate(SAMPLE_RATE)
         wf.writeframes(b''.join(audio_frames))
 
 def record_video():
     global recording
 
-    print("Rozpoczęto nagrywanie obrazu.")
+    print("Started recording video.")
     fps = 20
     prev = 0
     while recording:
@@ -57,20 +67,20 @@ def record_video():
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             out.write(frame)
         cv2.waitKey(10)
-    print("Nagrywanie obrazu zakończone.")
+    print("Video recording finished.")
     out.release()
 
 def main():
     global recording
 
-    # Uruchomienie wątków dla dźwięku i obrazu
+    # Start the threads for audio and video recording
     audio_thread = threading.Thread(target=record_audio)
     video_thread = threading.Thread(target=record_video)
 
     audio_thread.start()
     video_thread.start()
 
-    print("Naciśnij Ctrl+C, aby zakończyć nagrywanie.")
+    print("Press Ctrl+C to stop recording.")
     try:
         while True:
             time.sleep(1)
@@ -79,7 +89,7 @@ def main():
 
     audio_thread.join()
     video_thread.join()
-    print(f"Nagranie zakończone. Pliki: {VIDEO_OUTPUT_FILENAME}, {AUDIO_OUTPUT_FILENAME}")
+    print(f"Recording finished. Files: {VIDEO_OUTPUT_FILENAME}, {AUDIO_OUTPUT_FILENAME}")
 
 if __name__ == "__main__":
     main()
