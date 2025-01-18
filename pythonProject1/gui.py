@@ -87,7 +87,7 @@ class ScriptControllerApp:
         try:
             # Use the full path to the Python executable
             python_path = sys.executable  # This will use the same Python interpreter as the GUI
-            self.process = subprocess.Popen([python_path, "core.py"])
+            self.process = subprocess.Popen([python_path, "video.py"])
             messagebox.showinfo("Info", "Recording started successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to start recording: {e}")
