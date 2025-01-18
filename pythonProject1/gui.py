@@ -5,6 +5,7 @@ from tkinter import messagebox
 import subprocess
 import sys
 import pyautogui
+from speechToText import wav_to_text  # Importowanie funkcji do konwersji audio na tekst
 
 
 def save_email():
@@ -54,6 +55,18 @@ def stop_recording():
             recording_process_audio = None
 
         messagebox.showinfo("Info", "Recording stopped successfully!")
+
+        # After stopping the recording, call wav_to_text to process audio
+        audio_file_path = "loopback_record.wav"  # Ścieżka do pliku audio
+        output_text_file = "output_text.txt"  # Ścieżka do pliku tekstowego, gdzie zapisany zostanie wynik
+        messagebox.showinfo("Info", "Processing audio to text, please wait...")
+
+        # Call the wav_to_text function to process the audio
+        wav_to_text(audio_file_path, output_text_file)
+
+        # Notify user when processing is complete
+        messagebox.showinfo("Info", f"Text extraction complete. The result is saved in {output_text_file}")
+
     except subprocess.TimeoutExpired:
         if recording_process_video is not None:
             recording_process_video.kill()
@@ -66,8 +79,6 @@ def stop_recording():
         messagebox.showwarning("Warning", "Recording was forcefully stopped!")
     except Exception as e:
         messagebox.showerror("Error", f"Failed to stop recording: {e}")
-
-
 def take_screenshot():
     # Ścieżka do folderu, w którym zapisujemy screenshot
     folder_path = os.path.join(os.getcwd(), 'screenshots')
@@ -121,6 +132,8 @@ save_email_button.grid(row=0, column=2, padx=10)
 
 button_frame = tk.Frame(root, bg="#f7f3e9")
 button_frame.pack(pady=20)
+
+
 
 def create_parallelogram_button(parent, text, color, command, row, padx, pady):
     button = tk.Canvas(parent, width=250, height=60, bg="#f7f3e9", highlightthickness=0)
