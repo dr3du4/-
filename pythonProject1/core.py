@@ -1,95 +1,71 @@
 import wave
-import sounddevice as sd
 import threading
 import cv2
 import numpy as np
 import pyautogui
 import time
-
-# Parameters for audio recording
-SAMPLE_RATE = 44100  # Sampling rate
-CHANNELS = 2         # Number of channels
-AUDIO_OUTPUT_FILENAME = "output_audio.wav"
-
-# Parameters for video recording
-SCREEN_SIZE = (1920, 1080)
-VIDEO_OUTPUT_FILENAME = "output_video.avi"
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-out = cv2.VideoWriter(VIDEO_OUTPUT_FILENAME, fourcc, 20.0, SCREEN_SIZE)
-
-# Flag for recording
-recording = True
-audio_frames = []
-
 import signal
 import sys
 
+# Parameters for video recording
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+fps = 20  # Frames per second
+recording = False
+
 def signal_handler(sig, frame):
+    """Handle termination signal to stop recording."""
     global recording
     print("Received termination signal. Stopping recording...")
     recording = False
 
 signal.signal(signal.SIGTERM, signal_handler)
 
-def record_audio():
-    global audio_frames, recording
-
-    def callback(indata, frames, time, status):
-        if status:
-            print(status)
-        audio_frames.append(indata.copy())
-
-    print("Started recording audio.")
-    with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, callback=callback):
-        while recording:
-            sd.sleep(100)
-    print("Audio recording finished.")
-
-    # Save audio to a file
-    with wave.open(AUDIO_OUTPUT_FILENAME, 'wb') as wf:
-        wf.setnchannels(CHANNELS)
-        wf.setsampwidth(2)  # Sample size: 16 bits = 2 bytes
-        wf.setframerate(SAMPLE_RATE)
-        wf.writeframes(b''.join(audio_frames))
-
-def record_video():
+def record_video(output_filename):
+    """Record the screen and save it to a video file."""
     global recording
 
+    # Get the screen size dynamically
+    screen_size = pyautogui.size()
+    out = cv2.VideoWriter(output_filename, fourcc, fps, screen_size)
+
     print("Started recording video.")
-    fps = 20
-    prev = 0
+    prev_time = 0
     while recording:
-        time_elapsed = time.time() - prev
-        if time_elapsed > 1.0 / fps:
-            prev = time.time()
-            img = pyautogui.screenshot()
-            frame = np.array(img)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            out.write(frame)
-        cv2.waitKey(10)
-    print("Video recording finished.")
+        current_time = time.time()
+        if current_time - prev_time > 1.0 / fps:
+            prev_time = current_time
+            try:
+                img = pyautogui.screenshot()
+                frame = np.array(img)
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                out.write(frame)
+            except Exception as e:
+                print(f"Error during video recording: {e}")
+                break
+        cv2.waitKey(1)  # Small delay to allow proper handling
     out.release()
+    print("Video recording finished.")
+    #cv2.destroyAllWindows()
 
 def main():
     global recording
+    recording = True
 
-    # Start the threads for audio and video recording
-    audio_thread = threading.Thread(target=record_audio)
-    video_thread = threading.Thread(target=record_video)
+    output_filename = "output_video.avi"
+    video_thread = threading.Thread(target=record_video, args=(output_filename,))
 
-    audio_thread.start()
     video_thread.start()
 
     print("Press Ctrl+C to stop recording.")
     try:
-        while True:
+        while recording:
             time.sleep(1)
     except KeyboardInterrupt:
+        print("Keyboard interrupt received. Stopping recording...")
         recording = False
 
-    audio_thread.join()
     video_thread.join()
-    print(f"Recording finished. Files: {VIDEO_OUTPUT_FILENAME}, {AUDIO_OUTPUT_FILENAME}")
+    print(f"Recording finished. File saved as: {output_filename}")
 
 if __name__ == "__main__":
     main()
