@@ -7,7 +7,6 @@ import sys
 import pyautogui
 
 
-
 def save_email():
     email = email_entry.get()
     if email:
@@ -15,33 +14,55 @@ def save_email():
     else:
         messagebox.showwarning("Warning", "Please enter an email!")
 
+
 def start_recording():
-    global recording_process
-    if recording_process is not None and recording_process.poll() is None:
+    global recording_process_video, recording_process_audio
+    if recording_process_video is not None and recording_process_video.poll() is None:
         messagebox.showinfo("Info", "Recording is already running!")
         return
 
     try:
         python_path = sys.executable
-        recording_process = subprocess.Popen([python_path, "video.py"])
+
+        # Start video recording
+        recording_process_video = subprocess.Popen([python_path, "video.py"])
+
+        # Start audio recording
+        recording_process_audio = subprocess.Popen([python_path, "sound.py"])
+
         messagebox.showinfo("Info", "Recording started successfully!")
     except Exception as e:
         messagebox.showerror("Error", f"Failed to start recording: {e}")
 
+
 def stop_recording():
-    global recording_process
-    if recording_process is None or recording_process.poll() is not None:
+    global recording_process_video, recording_process_audio
+    if (recording_process_video is None or recording_process_video.poll() is not None) and \
+            (recording_process_audio is None or recording_process_audio.poll() is not None):
         messagebox.showinfo("Info", "Recording is not running!")
         return
 
     try:
-        recording_process.terminate()
-        recording_process.wait(timeout=5)
-        recording_process = None
+        if recording_process_video is not None:
+            recording_process_video.terminate()
+            recording_process_video.wait(timeout=5)
+            recording_process_video = None
+
+        if recording_process_audio is not None:
+            recording_process_audio.terminate()
+            recording_process_audio.wait(timeout=5)
+            recording_process_audio = None
+
         messagebox.showinfo("Info", "Recording stopped successfully!")
     except subprocess.TimeoutExpired:
-        recording_process.kill()
-        recording_process = None
+        if recording_process_video is not None:
+            recording_process_video.kill()
+            recording_process_video = None
+
+        if recording_process_audio is not None:
+            recording_process_audio.kill()
+            recording_process_audio = None
+
         messagebox.showwarning("Warning", "Recording was forcefully stopped!")
     except Exception as e:
         messagebox.showerror("Error", f"Failed to stop recording: {e}")
@@ -78,7 +99,8 @@ root.title("Passiflora")
 root.geometry("600x600")
 root.configure(bg="#f7f3e9")
 
-recording_process = None
+recording_process_video = None
+recording_process_audio = None
 
 # Title Label
 title_label = tk.Label(root, text="Welcome to Passiflora!", font=("Helvetica", 22, "bold"), fg="#ff914d", bg="#f7f3e9")
@@ -97,7 +119,6 @@ email_entry.grid(row=0, column=1, padx=10)
 save_email_button = tk.Button(email_frame, text="Save Email", font=("Helvetica", 12, "bold"), bg="#ff914d", fg="#ffffff", command=save_email)
 save_email_button.grid(row=0, column=2, padx=10)
 
-# Buttons for functionalities
 button_frame = tk.Frame(root, bg="#f7f3e9")
 button_frame.pack(pady=20)
 
