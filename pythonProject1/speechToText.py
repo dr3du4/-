@@ -2,6 +2,7 @@ import os
 from pydub import AudioSegment
 import math
 import speech_recognition as sr
+from groqPart import send_email
 
 def split_audio(input_audio_path, chunk_length_ms=45000):
     audio = AudioSegment.from_wav(input_audio_path)
@@ -33,7 +34,7 @@ def process_chunks(chunks):
             print(f"Could not connect to the speech recognition service: {e}")
     return text
 
-def wav_to_text(input_file, output_file):
+def wav_to_text(input_file, output_file, emailUser):
     if not os.path.exists(input_file):
         print(f"File {input_file} does not exist!")
         return
@@ -44,3 +45,12 @@ def wav_to_text(input_file, output_file):
     with open(output_file, "w") as f:
         f.write(text)
     print(f"Text saved in file: {output_file}")
+    email = emailUser # Here you will pass the email from the GUI (we'll do this in GUI)
+    send_email(
+        file_path=output_file,
+        recipient_email=email,
+        subject="File with Summary",
+        body="The email contains the file and its summary as an attachment.",
+        sender_email="your_mail@gmail.com",
+        sender_password=os.getenv("EMAIL_PASSWORD")
+    )

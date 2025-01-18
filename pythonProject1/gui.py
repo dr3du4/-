@@ -56,16 +56,22 @@ def stop_recording():
 
         messagebox.showinfo("Info", "Recording stopped successfully!")
 
+        # Get the email from the entry field
+        user_email = email_entry.get()
+
         # After stopping the recording, call wav_to_text to process audio
         audio_file_path = "loopback_record.wav"  # Ścieżka do pliku audio
         output_text_file = "output_text.txt"  # Ścieżka do pliku tekstowego, gdzie zapisany zostanie wynik
-        messagebox.showinfo("Info", "Processing audio to text, please wait...")
 
-        # Call the wav_to_text function to process the audio
-        wav_to_text(audio_file_path, output_text_file)
+        # Call the wav_to_text function to process the audio and send email
+        wav_to_text(audio_file_path, output_text_file, user_email)
 
         # Notify user when processing is complete
         messagebox.showinfo("Info", f"Text extraction complete. The result is saved in {output_text_file}")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to stop recording: {e}")
+
 
     except subprocess.TimeoutExpired:
         if recording_process_video is not None:

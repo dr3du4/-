@@ -4,8 +4,9 @@ from email.message import EmailMessage
 from groq import Groq
 
 # Groq Client Initialization
-api_key = os.getenv("GROQ_API_KEY") 
+api_key = ""
 client = Groq(api_key=api_key)
+
 
 # function that generates a summary from a text file
 def summarize_text_with_groq(file_path):
@@ -38,7 +39,7 @@ def summarize_text_with_groq(file_path):
         summary = chat_completion.choices[0].message.content
         print("Generated summary:", summary)  # debug: print summary
         return summary
-    
+
     except Exception as e:
         print(f"Error summarizing text: {e}")
         return None
@@ -46,7 +47,7 @@ def summarize_text_with_groq(file_path):
 
 # function sending an email
 def send_email(file_path, recipient_email, subject, body, sender_email, sender_password):
-    # generating summary file content 
+    # generating summary file content
     summary = summarize_text_with_groq(file_path)
     if not summary:
         print("Failed to generate summary. Email will not be sent.")
@@ -68,17 +69,17 @@ def send_email(file_path, recipient_email, subject, body, sender_email, sender_p
     try:
         with open(file_path, 'rb') as file:
             file_data = file.read()
-            file_name = file_path.split('/')[-1] 
+            file_name = file_path.split('/')[-1]
         msg.add_attachment(file_data, maintype='text', subtype='plain', filename=file_name)
-        
+
         with open(summary_file_path, 'rb') as summary_file:
             summary_file_data = summary_file.read()
         msg.add_attachment(summary_file_data, maintype='text', subtype='plain', filename="summary.txt")
-        
+
     except FileNotFoundError:
         print("File not found!")
         return
-    
+
     # sending email
     try:
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
@@ -88,15 +89,3 @@ def send_email(file_path, recipient_email, subject, body, sender_email, sender_p
         print("The email has been sent!")
     except Exception as e:
         print(f"Error sending email: {e}")
-
-
-
-# sample use
-send_email(
-    file_path='text_to_summarize.txt',
-    recipient_email='recipient@gmail.com',
-    subject='File with Summary',
-    body='The email contains the file and its summary as an attachment.',
-    sender_email='your_mail@gmail.com',
-    sender_password=os.getenv("EMAIL_PASSWORD")
-)
