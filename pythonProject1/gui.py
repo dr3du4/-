@@ -96,7 +96,7 @@ def take_screenshot():
     screenshot_filename = f"screenshot_{current_time}.png"
     screenshot_path = os.path.join(folder_path, screenshot_filename)
     screenshot.save(screenshot_path)
-
+    messagebox.showinfo("Info", f"Screenshot saved at {screenshot_path}")
     print(f"Screenshot saved at {screenshot_path}")
 
 
