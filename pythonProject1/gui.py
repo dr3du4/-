@@ -113,11 +113,15 @@ def take_screenshot():
 # Initialize the GUI
 root = tk.Tk()
 root.title("Passiflora")
-root.geometry("600x600")
+root.geometry("700x550")
 root.configure(bg="#f7f3e9")
 
 recording_process_video = None
 recording_process_audio = None
+
+icon = tk.PhotoImage(file="icon.png")
+root.iconphoto(True, icon)
+
 
 # Title Label
 title_label = tk.Label(root, text="Welcome to Passiflora!", font=("Helvetica", 22, "bold"), fg="#ff914d", bg="#f7f3e9")
