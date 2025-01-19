@@ -86,44 +86,34 @@ def stop_recording():
     except Exception as e:
         messagebox.showerror("Error", f"Failed to stop recording: {e}")
 def take_screenshot():
-    # Ścieżka do folderu, w którym zapisujemy screenshot
     folder_path = os.path.join(os.getcwd(), 'screenshots')
-
-    # Sprawdź, czy folder istnieje, jeśli nie, stwórz go
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    # Pobieramy aktualny czas w formacie yyyy-mm-dd_hh-mm-ss
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-    # Robimy pełny zrzut ekranu
     screenshot = pyautogui.screenshot()
 
-    # Tworzymy nazwę pliku z aktualną datą i godziną
     screenshot_filename = f"screenshot_{current_time}.png"
-
-    # Pełna ścieżka do zapisania pliku
     screenshot_path = os.path.join(folder_path, screenshot_filename)
-
-    # Zapisujemy screenshot w wybranym folderze
     screenshot.save(screenshot_path)
-
+    messagebox.showinfo("Info", f"Screenshot saved at {screenshot_path}")
     print(f"Screenshot saved at {screenshot_path}")
 
-# Initialize the GUI
+
 root = tk.Tk()
-root.title("Passiflora")
-root.geometry("600x600")
+root.title("Passiflora - record your boring meeting")
+root.geometry("700x550")
 root.configure(bg="#f7f3e9")
 
 recording_process_video = None
 recording_process_audio = None
 
-# Title Label
+icon = tk.PhotoImage(file="icon.png")
+root.iconphoto(True, icon)
+
 title_label = tk.Label(root, text="Welcome to Passiflora!", font=("Helvetica", 22, "bold"), fg="#ff914d", bg="#f7f3e9")
 title_label.pack(pady=20)
 
-# Email Entry Section
 email_frame = tk.Frame(root, bg="#f7f3e9")
 email_frame.pack(pady=10)
 
@@ -141,20 +131,30 @@ button_frame.pack(pady=20)
 
 
 
-def create_parallelogram_button(parent, text, color, command, row, padx, pady):
-    button = tk.Canvas(parent, width=250, height=60, bg="#f7f3e9", highlightthickness=0)
+def create_parallelogram_button(parent, text, color, command, row, padx, pady, width=300, height=80, skew=40):
+    button = tk.Canvas(parent, width=width, height=height, bg="#f7f3e9", highlightthickness=0)
     button.grid(row=row, column=0, padx=padx, pady=pady)
-    button.create_polygon(40, 10, 230, 10, 190, 50, 0, 50, fill=color, outline=color)
-    button.create_text(115, 30, text=text, fill="white", font=("Helvetica", 14, "bold"))
+    button.create_polygon(
+        skew, 0,
+        width, 0,
+        width - skew, height,
+        0, height,
+        fill=color, outline=color
+    )
+    button.create_text(
+        width / 2,
+        height / 2,
+        text=text, fill="white", font=("Helvetica", 14, "bold")
+    )
     button.bind("<Button-1>", lambda event: command())
+    return button
 
-create_parallelogram_button(button_frame, "Start Recording", "#ff914d", start_recording, row=0, padx=20, pady=20)
-create_parallelogram_button(button_frame, "Stop Recording", "#ff914d", stop_recording, row=1, padx=40, pady=20)
-create_parallelogram_button(button_frame, "Take Screenshot", "#ff914d", take_screenshot, row=2, padx=60, pady=20)
 
-# Footer Label
+create_parallelogram_button(button_frame, "Start Recording", "#FA5F55", start_recording, row=0, padx=20, pady=10)
+create_parallelogram_button(button_frame, "Stop Recording", "#FA5F55", stop_recording, row=1, padx=20, pady=10)
+create_parallelogram_button(button_frame, "Take Screenshot", "#FA5F55", take_screenshot, row=2, padx=20, pady=10)
+
 footer_label = tk.Label(root, text="Powered by Passiflora", font=("Helvetica", 10, "italic"), fg="#7f8c8d", bg="#f7f3e9")
 footer_label.pack(side=tk.BOTTOM, pady=10)
 
-# Run the GUI loop
 root.mainloop()
