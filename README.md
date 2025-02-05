@@ -39,6 +39,6 @@
 
 ---
 
-Więcej informacji: [Dokumentacja Inżynierii Wymagań]([https://github.com/dr3du4/-/blob/main/Dokumentacja%20In%C5%BCynierii%20Wymaga%C5%84.docx])
+Więcej informacji: [Dokumentacja Inżynierii Wymagań](https://github.com/dr3du4/-/blob/main/Dokumentacja%20In%C5%BCynierii%20Wymaga%C5%84.docx)
 
 
