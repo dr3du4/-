@@ -15,6 +15,17 @@ def save_email():
     else:
         messagebox.showwarning("Warning", "Please enter an email!")
 
+def merge_audio_video(video_path, audio_path, output_path):
+    try:
+        # FFMPEG command to merge video and audio
+        command = [
+            "ffmpeg", "-i", video_path, "-i", audio_path,
+            "-c:v", "copy", "-c:a", "aac", "-strict", "experimental", output_path
+        ]
+        subprocess.run(command, check=True)
+        messagebox.showinfo("Info", f"Merged video saved as {output_path}")
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"Failed to merge video and audio: {e}")
 
 def start_recording():
     global recording_process_video, recording_process_audio
@@ -62,6 +73,8 @@ def stop_recording():
         # After stopping the recording, call wav_to_text to process audio
         audio_file_path = "loopback_record.wav"  # Ścieżka do pliku audio
         output_text_file = "output_text.txt"  # Ścieżka do pliku tekstowego, gdzie zapisany zostanie wynik
+
+
 
         # Call the wav_to_text function to process the audio and send email
         wav_to_text(audio_file_path, output_text_file, user_email)

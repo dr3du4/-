@@ -26,7 +26,7 @@ def process_chunks(chunks):
         with sr.AudioFile(chunk) as source:
             audio = r.record(source)
         try:
-            text += r.recognize_google(audio, language="pl-PL") + " "  # Polish language
+            text += r.recognize_google(audio, language="en-US") + " "  # English
             text += "\n"
         except sr.UnknownValueError:
             print(f"Could not recognize speech in file: {chunk}")
