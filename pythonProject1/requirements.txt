@@ -1,0 +1,7 @@
+groq
+pyautogui
+pydub
+speechrecognition
+SpeechRecognition
+PyAudioWPatch
+opencv-python

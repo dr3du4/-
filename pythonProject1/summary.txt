@@ -1,7 +1,9 @@
-Sure, I'd be happy to help! Here's a summary of the text you provided:
+Sure, I'd be happy to help! However, it seems like you forgot to include the text you'd like me to summarize. Could you please provide the text?
 
-The text discusses the importance of incorporating sustainability into business strategies. It highlights the challenges that businesses face in implementing sustainable practices, such as the need to balance financial goals with environmental and social responsibilities. The text also emphasizes the benefits of sustainability, including cost savings, improved brand reputation, and increased customer loyalty.
+Here's an example of how you can structure your request:
 
-The author suggests that businesses can start their sustainability journey by assessing their current environmental impact and setting clear goals for improvement. They can then engage stakeholders, including employees, customers, and suppliers, in the sustainability effort. The text also recommends using sustainability frameworks, such as the United Nations Sustainable Development Goals, to guide the sustainability strategy.
+"You are a helpful assistant summarizes text documents. Summarize the following text:
 
-Overall, the text argues that sustainability is not only a responsible approach but also a strategic one that can lead to long-term business success.
+[insert text here]"
+
+Thank you!

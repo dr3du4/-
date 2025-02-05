@@ -4,7 +4,7 @@ from email.message import EmailMessage
 from groq import Groq
 
 # Groq Client Initialization
-api_key = ""
+api_key = "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"
 client = Groq(api_key=api_key)
 
 
